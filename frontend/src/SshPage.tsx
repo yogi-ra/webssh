@@ -5,7 +5,6 @@ import "@xterm/xterm/css/xterm.css";
 import toast from "react-hot-toast";
 import seatrium_logo from "../public/seatrium_logo_white.png";
 
-
 interface Connection {
   id: string;
   host: string;
@@ -22,155 +21,155 @@ const SshPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   // Styles untuk empty state yang baru
-const emptyState: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100%",
-  width: "100%",
-  color: "#94a3b8",
-  background: "#0f172a",
-  padding: "40px 20px",
-  minHeight: "min-content",
-  position: "relative",
-  overflow: "hidden",
-};
+  const emptyState: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%",
+    color: "#94a3b8",
+    background: "#0f172a",
+    padding: "40px 20px",
+    minHeight: "min-content",
+    position: "relative",
+    overflow: "hidden",
+  };
 
-const emptyStateBackgroundLogo: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  opacity: 0.06,
-  zIndex: 0,
-  pointerEvents: "none",
-};
+  const emptyStateBackgroundLogo: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: 0.06,
+    zIndex: 0,
+    pointerEvents: "none",
+  };
 
-const emptyStateLogoImage: React.CSSProperties = {
-  width: "90%",
-  height: "90%",
-  maxWidth: "900px",
-  maxHeight: "900px",
-  objectFit: "contain",
-  filter: "brightness(0) invert(1)",
-};
+  const emptyStateLogoImage: React.CSSProperties = {
+    width: "90%",
+    height: "90%",
+    maxWidth: "900px",
+    maxHeight: "900px",
+    objectFit: "contain",
+    filter: "brightness(0) invert(1)",
+  };
 
-const emptyStateContent: React.CSSProperties = {
-  textAlign: "center",
-  maxWidth: "500px",
-  padding: "40px 20px",
-  position: "relative",
-  zIndex: 2,
-};
+  const emptyStateContent: React.CSSProperties = {
+    textAlign: "center",
+    maxWidth: "500px",
+    padding: "40px 20px",
+    position: "relative",
+    zIndex: 2,
+  };
 
-const appTitleContainer: React.CSSProperties = {
-  marginBottom: "30px",
-};
+  const appTitleContainer: React.CSSProperties = {
+    marginBottom: "30px",
+  };
 
-const appTitleMain: React.CSSProperties = {
-  fontSize: "40px",
-  fontWeight: "800",
-  color: "#ffffff",
-  fontFamily: "'Poppins', sans-serif",
-  margin: "0 0 8px 0",
-  background: "linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #60a5fa 100%)",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
-  lineHeight: 1.1,
-  fontStyle: "italic",
-  letterSpacing: "-0.5px",
-};
+  const appTitleMain: React.CSSProperties = {
+    fontSize: "40px",
+    fontWeight: "800",
+    color: "#ffffff",
+    fontFamily: "'Poppins', sans-serif",
+    margin: "0 0 8px 0",
+    background:
+      "linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #60a5fa 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    lineHeight: 1.1,
+    fontStyle: "italic",
+    letterSpacing: "-0.5px",
+  };
 
-const appTitleAccent: React.CSSProperties = {
-  fontStyle: "italic",
-  background: "linear-gradient(135deg, #f6f6f6ff 0%, #faf7f5ff 100%)",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
-};
+  const appTitleAccent: React.CSSProperties = {
+    fontStyle: "italic",
+    background: "linear-gradient(135deg, #f6f6f6ff 0%, #faf7f5ff 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+  };
 
-const appTitleSubtitle: React.CSSProperties = {
-  fontSize: "15px",
-  fontWeight: "300",
-  color: "#94a3b8",
-  fontFamily: "'Poppins', sans-serif",
-  letterSpacing: "8px",
-  textTransform: "uppercase",
-  marginTop: "8px",
-};
+  const appTitleSubtitle: React.CSSProperties = {
+    fontSize: "15px",
+    fontWeight: "300",
+    color: "#94a3b8",
+    fontFamily: "'Poppins', sans-serif",
+    letterSpacing: "8px",
+    textTransform: "uppercase",
+    marginTop: "8px",
+  };
 
-const emptyStateTitle: React.CSSProperties = {
-  fontSize: "20px",
-  fontWeight: "600",
-  color: "#e2e8f0",
-  marginBottom: "16px",
-  fontFamily: "'Poppins', sans-serif",
-  background: "linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
-};
+  const emptyStateTitle: React.CSSProperties = {
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#e2e8f0",
+    marginBottom: "16px",
+    fontFamily: "'Poppins', sans-serif",
+    background: "linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+  };
 
-const emptyStateDescription: React.CSSProperties = {
-  fontSize: "14px",
-  lineHeight: 1.6,
-  marginBottom: "32px",
-  color: "#94a3b8",
-  fontFamily: "'Poppins', sans-serif",
-  fontWeight: "400",
-  maxWidth: "400px",
-  margin: "0 auto 32px auto",
-};
+  const emptyStateDescription: React.CSSProperties = {
+    fontSize: "14px",
+    lineHeight: 1.6,
+    marginBottom: "32px",
+    color: "#94a3b8",
+    fontFamily: "'Poppins', sans-serif",
+    fontWeight: "400",
+    maxWidth: "400px",
+    margin: "0 auto 32px auto",
+  };
 
-const emptyStateBtn: React.CSSProperties = {
-  background: "#0831b6",   // biru solid
-  color: "#ffffff",
-  border: "none",
-  padding: "14px 28px",
-  borderRadius: "10px",
-  cursor: "pointer",
-  fontWeight: "600",
-  fontSize: "15px",
-  transition: "all 0.2s ease",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  margin: "0 auto",
-  fontFamily: "'Poppins', sans-serif",
-  boxShadow: "none",        // hilangkan cahaya
-};
+  const emptyStateBtn: React.CSSProperties = {
+    background: "#0831b6", // biru solid
+    color: "#ffffff",
+    border: "none",
+    padding: "14px 28px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "15px",
+    transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto",
+    fontFamily: "'Poppins', sans-serif",
+    boxShadow: "none", // hilangkan cahaya
+  };
 
-const mobileemptyStateBtn: React.CSSProperties = {
-  background: "#0831b6",   // biru solid
-  color: "#ffffff",
-  border: "none",
-  padding: "12px 20px",
-  borderRadius: "10px",
-  cursor: "pointer",
-  fontWeight: "600",
-  fontSize: "11px", // ukuran font diperkecil
-  transition: "all 0.2s ease",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  margin: "0 auto",
-  fontFamily: "'Poppins', sans-serif",
-  boxShadow: "none", // hilangkan cahaya
-};
-
+  const mobileemptyStateBtn: React.CSSProperties = {
+    background: "#0831b6", // biru solid
+    color: "#ffffff",
+    border: "none",
+    padding: "12px 20px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "11px", // ukuran font diperkecil
+    transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto",
+    fontFamily: "'Poppins', sans-serif",
+    boxShadow: "none", // hilangkan cahaya
+  };
 
   // Detect mobile device
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const addConnection = () => {
@@ -184,7 +183,7 @@ const mobileemptyStateBtn: React.CSSProperties = {
       connected: false,
       connecting: false,
     };
-    
+
     setConnections((prev) => [...prev, newConnection]);
     setActiveTab(id);
   };
@@ -213,7 +212,7 @@ const mobileemptyStateBtn: React.CSSProperties = {
     setActiveTab(null);
   };
 
-  const activeConnection = connections.find(c => c.id === activeTab);
+  const activeConnection = connections.find((c) => c.id === activeTab);
 
   return (
     <div style={container}>
@@ -222,13 +221,13 @@ const mobileemptyStateBtn: React.CSSProperties = {
         <div style={isMobile ? mobileHeaderContent : headerContent}>
           <div style={logoSection}>
             <div style={logoContainer}>
-              <img 
+              <img
                 src={seatrium_logo}
                 alt="Seatrium Logo"
                 style={isMobile ? mobileLogo : logo}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
+                  target.style.display = "none";
                 }}
               />
             </div>
@@ -239,27 +238,37 @@ const mobileemptyStateBtn: React.CSSProperties = {
               </div>
             )}
           </div>
-          
+
           <div style={isMobile ? mobileHeaderActions : headerActions}>
             {connections.length > 0 && !isMobile && (
-              <button 
+              <button
                 style={closeAllButton}
                 onClick={closeAllConnections}
                 title="Close All Connections"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M2.146 2.854a.5.5 0 11.708-.708L8 7.293l5.146-5.147a.5.5 0 01.708.708L8.707 8l5.147 5.146a.5.5 0 01-.708.708L8 8.707l-5.146 5.147a.5.5 0 01-.708-.708L7.293 8 2.146 2.854z"/>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                >
+                  <path d="M2.146 2.854a.5.5 0 11.708-.708L8 7.293l5.146-5.147a.5.5 0 01.708.708L8.707 8l5.147 5.146a.5.5 0 01-.708.708L8 8.707l-5.146 5.147a.5.5 0 01-.708-.708L7.293 8 2.146 2.854z" />
                 </svg>
                 Close All
               </button>
             )}
-            <button 
+            <button
               style={isMobile ? mobileNewConnectionButton : newConnectionButton}
               onClick={addConnection}
               title="New Connection"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
+                <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z" />
               </svg>
               {!isMobile && "New Connection"}
             </button>
@@ -271,9 +280,9 @@ const mobileemptyStateBtn: React.CSSProperties = {
       <div style={mainContent}>
         {/* Background Logo Transparan */}
         <div style={backgroundLogo}>
-          <img 
-            src={seatrium_logo} 
-            alt="Seatrium Background Logo" 
+          <img
+            src={seatrium_logo}
+            alt="Seatrium Background Logo"
             style={backgroundLogoImage}
           />
         </div>
@@ -287,25 +296,45 @@ const mobileemptyStateBtn: React.CSSProperties = {
                 {!isMobile && connections.length > 0 && (
                   <div style={tabFirstSpacer}></div>
                 )}
-                
+
                 {connections.map((conn, index) => (
                   <React.Fragment key={conn.id}>
                     <div
                       style={{
                         ...(isMobile ? mobileTabStyle : tabStyle),
-                        ...(activeTab === conn.id ? (isMobile ? mobileActiveTabStyle : activeTabStyle) : {}),
-                        ...(index === 0 ? (isMobile ? mobileFirstTabStyle : firstTabStyle) : {}),
-                        ...(index === connections.length - 1 ? (isMobile ? mobileLastTabStyle : lastTabStyle) : {})
+                        ...(activeTab === conn.id
+                          ? isMobile
+                            ? mobileActiveTabStyle
+                            : activeTabStyle
+                          : {}),
+                        ...(index === 0
+                          ? isMobile
+                            ? mobileFirstTabStyle
+                            : firstTabStyle
+                          : {}),
+                        ...(index === connections.length - 1
+                          ? isMobile
+                            ? mobileLastTabStyle
+                            : lastTabStyle
+                          : {}),
                       }}
                       onClick={() => setActiveTab(conn.id)}
                     >
                       <div style={isMobile ? mobileTabContent : tabContent}>
-                        <div style={conn.connected ? connectedIndicator : disconnectedIndicator}>
+                        <div
+                          style={
+                            conn.connected
+                              ? connectedIndicator
+                              : disconnectedIndicator
+                          }
+                        >
                           {conn.connected ? "●" : "○"}
                         </div>
                         <span style={isMobile ? mobileTabTitle : tabTitle}>
                           {conn.username && conn.host
-                            ? (isMobile ? conn.host : `${conn.username}@${conn.host}`)
+                            ? isMobile
+                              ? conn.host
+                              : `${conn.username}@${conn.host}`
                             : "New Connection"}
                         </span>
                       </div>
@@ -313,7 +342,7 @@ const mobileemptyStateBtn: React.CSSProperties = {
                         <button
                           style={{
                             ...tabCloseBtn,
-                            ...(activeTab === conn.id ? activeTabCloseBtn : {})
+                            ...(activeTab === conn.id ? activeTabCloseBtn : {}),
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -325,23 +354,34 @@ const mobileemptyStateBtn: React.CSSProperties = {
                         </button>
                       )}
                     </div>
-                    
+
                     {/* Tab spacer antara tab */}
                     {!isMobile && index < connections.length - 1 && (
                       <div style={tabSpacer}></div>
                     )}
                   </React.Fragment>
                 ))}
-                
+
                 {/* New Tab Button dengan style Edge */}
-                <div style={isMobile ? mobileNewTabButtonContainer : newTabButtonContainer}>
-                  <button 
-                    style={isMobile ? mobileNewTabButton : newTabButton} 
-                    onClick={addConnection} 
+                <div
+                  style={
+                    isMobile
+                      ? mobileNewTabButtonContainer
+                      : newTabButtonContainer
+                  }
+                >
+                  <button
+                    style={isMobile ? mobileNewTabButton : newTabButton}
+                    onClick={addConnection}
                     title="New tab"
                   >
-                    <svg width={isMobile ? "14" : "18"} height={isMobile ? "14" : "18"} viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z"/>
+                    <svg
+                      width={isMobile ? "14" : "18"}
+                      height={isMobile ? "14" : "18"}
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                    >
+                      <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z" />
                     </svg>
                   </button>
                 </div>
@@ -351,52 +391,61 @@ const mobileemptyStateBtn: React.CSSProperties = {
 
           {/* Content Area dengan scroll */}
           <div style={contentArea}>
-  {activeConnection ? (
-    <SshTerminal 
-      connection={activeConnection} 
-      onUpdate={updateConnection}
-      isMobile={isMobile}
-    />
-  ) : (
-    <div style={emptyState}>
-      {/* Background Logo Transparan */}
-        <div style={emptyStateBackgroundLogo}>
-        <img 
-          src={seatrium_logo} 
-          alt="Seatrium Logo" 
-          style={emptyStateLogoImage}
-        />
-      </div>
-      
-      <div style={emptyStateContent}>
-        {/* Judul Aplikasi dengan Desain Italic dan Gradient */}
-        <div style={appTitleContainer}>
-          <h1 style={appTitleMain}>Secure<span style={appTitleAccent}>Shell</span></h1>
-          <div style={appTitleSubtitle}>TERMINAL</div>
-        </div>
+            {activeConnection ? (
+              <SshTerminal
+                connection={activeConnection}
+                onUpdate={updateConnection}
+                isMobile={isMobile}
+              />
+            ) : (
+              <div style={emptyState}>
+                {/* Background Logo Transparan */}
+                <div style={emptyStateBackgroundLogo}>
+                  <img
+                    src={seatrium_logo}
+                    alt="Seatrium Logo"
+                    style={emptyStateLogoImage}
+                  />
+                </div>
 
-        <h2 style={emptyStateTitle}>No Active Connections</h2>
-        <p style={emptyStateDescription}>
-          Create a new SSH connection to manage your remote servers
-        </p>
-        
-        <button style={isMobile ? mobileEmptyStateBtn : emptyStateBtn} onClick={addConnection}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style={{marginRight: '8px'}}>
-            <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z"/>
-          </svg>
-          Create New Connection
-        </button>
-      </div>
-    </div>
-  )}
-</div>
+                <div style={emptyStateContent}>
+                  {/* Judul Aplikasi dengan Desain Italic dan Gradient */}
+                  <div style={appTitleContainer}>
+                    <h1 style={appTitleMain}>
+                      Secure<span style={appTitleAccent}>Shell</span>
+                    </h1>
+                    <div style={appTitleSubtitle}>TERMINAL</div>
+                  </div>
+
+                  <h2 style={emptyStateTitle}>No Active Connections</h2>
+                  <p style={emptyStateDescription}>
+                    Create a new SSH connection to manage your remote servers
+                  </p>
+
+                  <button
+                    style={isMobile ? mobileEmptyStateBtn : emptyStateBtn}
+                    onClick={addConnection}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      style={{ marginRight: "8px" }}
+                    >
+                      <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z" />
+                    </svg>
+                    Create New Connection
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
-
 
 const SshTerminal: React.FC<{
   connection: Connection;
@@ -408,11 +457,12 @@ const SshTerminal: React.FC<{
   const fitRef = useRef<FitAddon | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
-  const { id, connected, connecting, host, port, username, password } = connection;
+  const { id, connected, connecting, host, port, username, password } =
+    connection;
 
   useEffect(() => {
     if (!connected) return;
-    
+
     const ws = new WebSocket("ws://localhost:8000/ws/ssh");
     ws.binaryType = "arraybuffer";
 
@@ -421,8 +471,9 @@ const SshTerminal: React.FC<{
     const term = new Terminal({
       cursorBlink: true,
       fontSize: isMobile ? 12 : 14,
-      fontFamily: "'Poppins', 'Cascadia Code', 'Consolas', 'Courier New', monospace",
-      theme: { 
+      fontFamily:
+        "'Poppins', 'Cascadia Code', 'Consolas', 'Courier New', monospace",
+      theme: {
         background: "#0f172a",
         foreground: "#e2e8f0",
         cursor: "#3b82f6",
@@ -443,11 +494,11 @@ const SshTerminal: React.FC<{
         brightMagenta: "#a855f7",
         brightCyan: "#06b6d4",
         brightWhite: "#f8fafc",
-      }
+      },
     });
     term.open(termDiv.current!);
     termRef.current = term;
-    
+
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
     fitAddon.fit();
@@ -459,7 +510,7 @@ const SshTerminal: React.FC<{
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === '+' || e.key === '=') {
+        if (e.key === "+" || e.key === "=") {
           e.preventDefault();
           const currentFontSize = term.options.fontSize as number;
           term.options.fontSize = currentFontSize + 1;
@@ -467,13 +518,15 @@ const SshTerminal: React.FC<{
             fitAddon.fit();
             const ws = wsRef.current;
             if (ws && ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({
-                type: "resize",
-                data: { cols: term.cols, rows: term.rows }
-              }));
+              ws.send(
+                JSON.stringify({
+                  type: "resize",
+                  data: { cols: term.cols, rows: term.rows },
+                }),
+              );
             }
           }, 10);
-        } else if (e.key === '-') {
+        } else if (e.key === "-") {
           e.preventDefault();
           const currentFontSize = term.options.fontSize as number;
           if (currentFontSize > 8) {
@@ -482,24 +535,28 @@ const SshTerminal: React.FC<{
               fitAddon.fit();
               const ws = wsRef.current;
               if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                  type: "resize",
-                  data: { cols: term.cols, rows: term.rows }
-                }));
+                ws.send(
+                  JSON.stringify({
+                    type: "resize",
+                    data: { cols: term.cols, rows: term.rows },
+                  }),
+                );
               }
             }, 10);
           }
-        } else if (e.key === '0') {
+        } else if (e.key === "0") {
           e.preventDefault();
           term.options.fontSize = isMobile ? 12 : 14;
           setTimeout(() => {
             fitAddon.fit();
             const ws = wsRef.current;
             if (ws && ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({
-                type: "resize",
-                data: { cols: term.cols, rows: term.rows }
-              }));
+              ws.send(
+                JSON.stringify({
+                  type: "resize",
+                  data: { cols: term.cols, rows: term.rows },
+                }),
+              );
             }
           }, 10);
         }
@@ -508,26 +565,30 @@ const SshTerminal: React.FC<{
 
     const terminalContainer = termDiv.current;
     if (terminalContainer) {
-      terminalContainer.addEventListener('keydown', handleKeyDown);
+      terminalContainer.addEventListener("keydown", handleKeyDown);
     }
 
     ws.onopen = () => {
       console.log("Connected to SSH WebSocket");
       term.write("\n\x1b[32mConnecting to SSH server...\x1b[0m\n");
-      
-      ws.send(JSON.stringify({ 
-        type: "connect", 
-        data: { host, port, username, password } 
-      }));
-      
+
+      ws.send(
+        JSON.stringify({
+          type: "connect",
+          data: { host, port, username, password },
+        }),
+      );
+
       setTimeout(() => {
         if (term && fitAddon) {
           fitAddon.fit();
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-              type: "resize",
-              data: { cols: term.cols, rows: term.rows }
-            }));
+            ws.send(
+              JSON.stringify({
+                type: "resize",
+                data: { cols: term.cols, rows: term.rows },
+              }),
+            );
           }
         }
       }, 500);
@@ -538,11 +599,11 @@ const SshTerminal: React.FC<{
         try {
           const msg = JSON.parse(evt.data);
           if (msg.type === "connected") {
-            term.write("\n\x1b[32m Connected to SSH server!\x1b[0m\n");
-            term.write("\n");
-            term.focus()
+            term.write("\r\x1b[32mConnected to SSH server!\x1b[0m\n");
+            term.write("\r\n");
+            term.focus();
           } else if (msg.type === "error") {
-            const errMsg = `\n\x1b[31m${msg.data}\x1b[0m\n`;
+            const errMsg = `\r\n\x1b[31m${msg.data}\x1b[0m\r\n`;
             term.write(errMsg);
             setTimeout(() => {
               onUpdate(id, {
@@ -563,12 +624,12 @@ const SshTerminal: React.FC<{
 
     ws.onerror = (error) => {
       console.error("WebSocket error:", error);
-      term.write("\n\x1b[31mWebSocket connection error\x1b[0m\n");
+      term.write("\r\n\x1b[31mWebSocket connection error\x1b[0m\n");
     };
 
     ws.onclose = () => {
       console.log("Disconnected from SSH WebSocket");
-      term.write("\n\x1b[31mDisconnected from SSH server\x1b[0m\n");
+      term.write("\r\n\x1b[31mDisconnected from SSH server\x1b[0m\n");
       onUpdate(id, { connected: false, connecting: false });
       wsRef.current = null;
     };
@@ -583,9 +644,9 @@ const SshTerminal: React.FC<{
         ws.close();
       }
       term.dispose();
-      
+
       if (terminalContainer) {
-        terminalContainer.removeEventListener('keydown', handleKeyDown);
+        terminalContainer.removeEventListener("keydown", handleKeyDown);
       }
     };
   }, [connected, host, port, username, password, id, onUpdate, isMobile]);
@@ -595,21 +656,23 @@ const SshTerminal: React.FC<{
       setTimeout(() => {
         const terminalElement = termDiv.current;
         if (!terminalElement) return;
-        
+
         const fitAddon = fitRef.current;
         if (!fitAddon) return;
-        
+
         fitAddon.fit();
-        
+
         const term = termRef.current;
         if (!term) return;
-        
+
         const ws = wsRef.current;
         if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({
-            type: "resize",
-            data: { cols: term.cols, rows: term.rows }
-          }));
+          ws.send(
+            JSON.stringify({
+              type: "resize",
+              data: { cols: term.cols, rows: term.rows },
+            }),
+          );
         }
       }, 100);
     });
@@ -619,7 +682,10 @@ const SshTerminal: React.FC<{
     }
 
     const preventZoom = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '-' || e.key === '0')) {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "=" || e.key === "-" || e.key === "0")
+      ) {
         e.preventDefault();
         return false;
       }
@@ -638,15 +704,17 @@ const SshTerminal: React.FC<{
       }
     };
 
-    window.addEventListener('keydown', preventZoom, { passive: false });
-    window.addEventListener('wheel', preventWheelZoom, { passive: false });
-    document.addEventListener('touchstart', preventPinchZoom, { passive: false });
+    window.addEventListener("keydown", preventZoom, { passive: false });
+    window.addEventListener("wheel", preventWheelZoom, { passive: false });
+    document.addEventListener("touchstart", preventPinchZoom, {
+      passive: false,
+    });
 
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener('keydown', preventZoom);
-      window.removeEventListener('wheel', preventWheelZoom);
-      document.removeEventListener('touchstart', preventPinchZoom);
+      window.removeEventListener("keydown", preventZoom);
+      window.removeEventListener("wheel", preventWheelZoom);
+      document.removeEventListener("touchstart", preventPinchZoom);
     };
   }, [connected, wsRef]);
 
@@ -656,18 +724,22 @@ const SshTerminal: React.FC<{
         <div style={isMobile ? mobileFormContainer : formContainer}>
           <div style={formHeader}>
             <h2 style={formTitle}>SSH CONNECTION</h2>
-            <p style={formSubtitle}>Enter your server credentials to establish a secure connection</p>
+            <p style={formSubtitle}>
+              Enter your server credentials to establish a secure connection
+            </p>
           </div>
 
           {connection.error && (
-            <div style={{ 
-              color: "#f87171", 
-              fontWeight: 500, 
-              marginBottom: "20px", 
-              fontFamily: "'Poppins', sans-serif", 
-              fontSize: isMobile ? "12px" : "13px",
-              textAlign: "center"
-            }}>
+            <div
+              style={{
+                color: "#f87171",
+                fontWeight: 500,
+                marginBottom: "20px",
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: isMobile ? "12px" : "13px",
+                textAlign: "center",
+              }}
+            >
               {connection.error}
             </div>
           )}
@@ -692,7 +764,10 @@ const SshTerminal: React.FC<{
                 type="number"
                 value={port}
                 onChange={(e) =>
-                  onUpdate(id, { port: Number(e.target.value), error: undefined })
+                  onUpdate(id, {
+                    port: Number(e.target.value),
+                    error: undefined,
+                  })
                 }
                 style={isMobile ? mobileFormInput : formInput}
               />
@@ -727,7 +802,7 @@ const SshTerminal: React.FC<{
           <button
             style={{
               ...(isMobile ? mobileConnectButton : connectButton),
-              ...((!host || !username || !password) ? connectButtonDisabled : {})
+              ...(!host || !username || !password ? connectButtonDisabled : {}),
             }}
             disabled={connecting || !host || !username || !password}
             onClick={() => {
@@ -745,9 +820,15 @@ const SshTerminal: React.FC<{
               </>
             ) : (
               <>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style={{marginRight: '8px'}}>
-                  <path d="M4.715 6.542L3.343 7.914a3 3 0 104.243 4.243l1.828-1.829A3 3 0 008.586 5.5L8 6.086a1.002 1.002 0 00-.154.199 2 2 0 01.861 3.337L6.88 11.45a2 2 0 11-2.83-2.83l.793-.792a4.018 4.018 0 01-.128-1.287z"/>
-                  <path d="M6.586 4.672A3 3 0 007.414 9.5l.775-.776a2 2 0 01-.896-3.346L9.12 3.55a2 2 0 112.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 10-4.243-4.243L6.586 4.672z"/>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  style={{ marginRight: "8px" }}
+                >
+                  <path d="M4.715 6.542L3.343 7.914a3 3 0 104.243 4.243l1.828-1.829A3 3 0 008.586 5.5L8 6.086a1.002 1.002 0 00-.154.199 2 2 0 01.861 3.337L6.88 11.45a2 2 0 11-2.83-2.83l.793-.792a4.018 4.018 0 01-.128-1.287z" />
+                  <path d="M6.586 4.672A3 3 0 007.414 9.5l.775-.776a2 2 0 01-.896-3.346L9.12 3.55a2 2 0 112.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 10-4.243-4.243L6.586 4.672z" />
                 </svg>
                 Connect to Server
               </>
@@ -759,9 +840,9 @@ const SshTerminal: React.FC<{
   }
 
   return (
-    <div 
-      ref={termDiv} 
-      style={isMobile ? mobileTerminalContainer : terminalContainer} 
+    <div
+      ref={termDiv}
+      style={isMobile ? mobileTerminalContainer : terminalContainer}
     />
   );
 };
@@ -1429,17 +1510,17 @@ const mobileEmptyStateBtn: React.CSSProperties = {
 };
 
 const terminalContainer: React.CSSProperties = {
-  width: "100%", 
+  width: "100%",
   height: "100%",
   background: "#0f172a",
   padding: "0px",
   display: "flex",
   flexDirection: "column",
-  flex: 1
+  flex: 1,
 };
 
 const mobileTerminalContainer: React.CSSProperties = {
-  width: "100%", 
+  width: "100%",
   height: "100%",
   background: "#0f172a",
   padding: "0px",
