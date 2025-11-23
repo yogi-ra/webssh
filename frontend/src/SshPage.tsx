@@ -160,6 +160,69 @@ const SshPage: React.FC = () => {
     boxShadow: "none", // hilangkan cahaya
   };
 
+// Di awal component SshPage, tambahkan:
+// Di SshPage component, ganti useEffect checkAuth dengan ini:
+useEffect(() => {
+  checkAuth();
+}, []);
+
+// Di SshPage component, ganti checkAuth dengan ini:
+const checkAuth = async () => {
+  console.log("🔐 Starting authentication check...");
+  
+  // Cek token dari URL parameter terlebih dahulu
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromUrl = urlParams.get('token');
+  
+  if (tokenFromUrl) {
+    console.log("🔑 Token found in URL, saving to localStorage");
+    localStorage.setItem('ssh_token', tokenFromUrl);
+    // Hapus token dari URL
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  const token = localStorage.getItem('ssh_token');
+  console.log("📝 Token from localStorage:", token ? "Exists" : "Missing");
+  
+  if (!token) {
+    console.log("❌ No token found, redirecting to portal login");
+    window.location.href = 'http://localhost:3000/login?redirect=ssh';
+    return;
+  }
+  
+  try {
+    console.log("🔄 Verifying token with backend...");
+    const response = await fetch('http://localhost:8000/verify', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log("📡 Verification response status:", response.status);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log(" Authentication successful:", data);
+      // Auth berhasil, lanjutkan
+      return;
+    } else {
+      const errorText = await response.text();
+      console.log(" Verification failed:", errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    
+  } catch (error) {
+    console.error(' Auth failed:', error);
+    // Hapus token invalid
+    localStorage.removeItem('ssh_token');
+    // Redirect ke portal login
+    console.log(" Redirecting to portal login due to auth failure");
+    window.location.href = 'http://localhost:3000/login?redirect=ssh';
+  }
+};
+
   // Detect mobile device
   useEffect(() => {
     const checkMobile = () => {
