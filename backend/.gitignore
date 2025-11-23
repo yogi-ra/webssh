@@ -1,0 +1,15 @@
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+
+# Node
+frontend/node_modules/
+bun.lock
+
+# OS / Editor
+.DS_Store
+*.log
+
+# Environment files
+.env

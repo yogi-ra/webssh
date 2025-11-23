@@ -1,0 +1,64 @@
+#############################
+#        BACKEND (PYTHON)
+#############################
+
+# Virtual environment
+backend/venv/
+
+# Python cache
+backend/__pycache__/
+__pycache__/
+*.pyc
+
+#############################
+#        FRONTEND (NODE/BUN)
+#############################
+
+# Node modules
+frontend/node_modules/
+node_modules/
+
+# Bun / Build outputs
+frontend/out/
+frontend/dist/
+out/
+dist/
+*.tgz
+
+# Bun lock file
+bun.lock
+
+#############################
+#        LOGS & COVERAGE
+#############################
+
+logs/
+*.log
+coverage/
+*.lcov
+report.*.json
+
+#############################
+#        ENV FILES
+#############################
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+#############################
+#        CACHES
+#############################
+
+.eslintcache
+.cache
+*.tsbuildinfo
+
+#############################
+#        OS & IDE
+#############################
+
+.DS_Store
+.idea
