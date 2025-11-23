@@ -6,6 +6,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 
+
 class SSH:
     def __init__(self, websocket: WebSocket, host, port, username, password):
         self.websocket = websocket
@@ -49,8 +50,7 @@ class SSH:
                 # Check if channel is still open
                 if self.channel.closed:
                     await self.websocket.send_text(
-                        json.dumps(
-                            {"type": "error", "data": "SSH channel closed"})
+                        json.dumps({"type": "error", "data": "SSH channel closed"})
                     )
                     break
 
@@ -58,13 +58,9 @@ class SSH:
         except Exception as e:
             print(f"Error reading SSH data: {e}")
             traceback.print_exc()
-            try:
-                await self.websocket.send_text(
-                    json.dumps(
-                        {"type": "error", "data": f"Read error: {str(e)}"})
-                )
-            except:
-                pass
+            await self.websocket.send_text(
+                json.dumps({"type": "error", "data": f"Read error: {str(e)}"})
+            )
 
     async def write_data(self, data):
         """Write data to SSH channel"""
@@ -76,6 +72,13 @@ class SSH:
             await self.websocket.send_text(
                 json.dumps({"type": "error", "data": f"Write error: {str(e)}"})
             )
+
+    def resize_pty(self, width, height):
+        """Resize the pseudo-terminal"""
+        try:
+            self.channel.resize_pty(width=width, height=height)
+        except Exception as e:
+            print(f"Error resizing pty: {str(e)}")
 
     def close(self):
         """Close SSH connection"""
@@ -137,6 +140,12 @@ async def websocket_endpoint(websocket: WebSocket):
             elif message["type"] == "data" and ssh_connection:
                 await ssh_connection.write_data(message["data"])
 
+            elif message["type"] == "resize" and ssh_connection:
+                data = message["data"]
+                cols = data.get("cols", 80)
+                rows = data.get("rows", 24)
+                ssh_connection.resize_pty(cols, rows)
+
     except WebSocketDisconnect:
         print("Client disconnected")
     except Exception as e:
@@ -153,3 +162,4 @@ async def websocket_endpoint(websocket: WebSocket):
         if ssh_connection:
             ssh_connection.close()
             print("SSH connection closed")
+
