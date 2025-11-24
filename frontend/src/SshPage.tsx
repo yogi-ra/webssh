@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import SshTerminal from "./components/SshTerminal";
 import type { Connection } from "./components/types";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import { 
   workspaceStyle, 
   tabContainer,
@@ -9,6 +11,7 @@ import {
   activeTab,
   tabContent,
   newTabButton,
+  connectionCounter,
   // Header Styles
   header,
   mobileHeader,
@@ -38,12 +41,123 @@ import {
   mobileEmptyStateBtn
 } from "./components/styles";
 
+// Import logo
+import seatrium_logo from "../public/seatrium_logo_white.png";
+
+// Mobile-specific styles
+const mobileTabContainer: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  background: "rgba(15, 23, 42, 0.9)",
+  borderBottom: `1px solid #334155`,
+  padding: "6px 8px 0 8px",
+  gap: 2,
+  flexShrink: 0,
+  minHeight: 36,
+  overflowX: "auto",
+  fontFamily: "'Poppins', sans-serif",
+};
+
+const mobileTab: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  padding: "8px 12px",
+  background: "rgba(30, 41, 59, 0.6)",
+  color: "#cbd5e1",
+  border: `1px solid #334155`,
+  borderBottom: "none",
+  borderRadius: "6px 6px 0 0",
+  cursor: "pointer",
+  fontSize: 11,
+  fontWeight: 400,
+  minWidth: 100,
+  maxWidth: 150,
+  transition: "all 0.2s ease",
+  position: "relative",
+  fontFamily: "'Poppins', sans-serif",
+};
+
+const mobileActiveTab: React.CSSProperties = {
+  ...mobileTab,
+  background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+  color: "#f8fafc",
+  borderColor: "#334155",
+  borderBottom: `1px solid #0f172a`,
+  marginBottom: "-1px",
+  fontWeight: 600,
+};
+
+const mobileNewTabButton: React.CSSProperties = {
+  background: "rgba(30, 41, 59, 0.6)",
+  color: "#cbd5e1",
+  border: `1px solid #334155`,
+  borderRadius: 4,
+  cursor: "pointer",
+  fontSize: 14,
+  fontWeight: 600,
+  width: 28,
+  height: 28,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  transition: "all 0.2s ease",
+  marginLeft: 6,
+  fontFamily: "'Poppins', sans-serif",
+};
+
+// Background logo style used in the empty state
+const emptyStateBackgroundLogo: React.CSSProperties = {
+  position: "absolute",
+  top: "40%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "900px",
+  opacity: 0.03,
+  pointerEvents: "none",
+};
+
+const mobileEmptyStateBackgroundLogo: React.CSSProperties = {
+  ...emptyStateBackgroundLogo,
+  width: "400px", // Lebih kecil untuk mobile
+};
+
+// Responsive workspace style
+const responsiveWorkspaceStyle: React.CSSProperties = {
+  ...workspaceStyle,
+  overflow: "hidden", // Tetap hidden untuk desktop
+  height: "100vh",
+};
+
+const mobileWorkspaceStyle: React.CSSProperties = {
+  ...workspaceStyle,
+  height: "100vh",
+  overflow: "hidden", // Container utama tetap hidden
+  position: "relative",
+};
+
+// Tab content yang bisa di-scroll di mobile
+const mobileTabContent: React.CSSProperties = {
+  flex: 1,
+  background: "#0f172a",
+  overflow: "hidden",
+  position: "relative",
+  fontFamily: "'Poppins', sans-serif",
+};
+
+// Scrollable container untuk form di mobile
+const mobileScrollContainer: React.CSSProperties = {
+  height: "100%",
+  overflowY: "auto",
+  WebkitOverflowScrolling: "touch", // Smooth scrolling untuk iOS
+  paddingBottom: "20px", // Ruang untuk scroll
+};
+
 const SshPage: React.FC = () => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check mobile screen size
+  // Check mobile screen size dengan threshold yang lebih baik
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -106,13 +220,45 @@ const SshPage: React.FC = () => {
     });
   };
 
-  const closeAllConnections = () => {
+  const closeAllConnections = async () => {
     if (connections.length === 0) return;
-    
-    if (window.confirm(`Close all ${connections.length} connections?`)) {
+
+    const result = await Swal.fire({
+      title: "Close All Connections?",
+      text: `You have ${connections.length} active connections.`,
+      icon: "warning",
+      background: "#0f172a",
+      color: "#f8fafc",
+      showCancelButton: true,
+      confirmButtonText: "Yes, close all",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#22c55e",
+      cancelButtonColor: "#ef4444",
+      customClass: {
+        popup: "poppins-popup",
+        title: "poppins-title",
+        htmlContainer: "poppins-text",
+        confirmButton: "poppins-confirm",
+        cancelButton: "poppins-cancel",
+      },
+    });
+
+    if (result.isConfirmed) {
       setConnections([]);
       setActiveTabId(null);
-      toast.success('All connections closed');
+
+      Swal.fire({
+        title: "All connections closed",
+        icon: "success",
+        timer: 1200,
+        showConfirmButton: false,
+        background: "#0f172a",
+        color: "#f8fafc",
+        customClass: {
+          popup: "poppins-popup",
+          title: "poppins-title",
+        },
+      });
     }
   };
 
@@ -122,48 +268,31 @@ const SshPage: React.FC = () => {
 
   const getTabTitle = (conn: Connection) => {
     if (conn.connected && conn.host && conn.username) {
+      // Untuk mobile, tampilkan host saja jika terlalu panjang
+      if (isMobile && `${conn.username}@${conn.host}`.length > 12) {
+        return conn.host;
+      }
       return `${conn.username}@${conn.host}`;
     }
     return conn.connected ? "Connected" : "New Connection";
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    const target = e.target as HTMLImageElement;
-    target.style.display = 'none';
-    
-    const logoContainer = target.parentElement;
-    if (logoContainer && !logoContainer.querySelector('.logo-fallback')) {
-      const fallback = document.createElement('div');
-      fallback.className = 'logo-fallback';
-      fallback.textContent = '';
-      fallback.style.cssText = `
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        color: white;
-      `;
-      logoContainer.appendChild(fallback);
-    }
-  };
-
   return (
-    <div style={workspaceStyle}>
-      {/* Header Baru dengan Layout Fixed */}
+    <div style={isMobile ? mobileWorkspaceStyle : responsiveWorkspaceStyle}>
+      {/* Header */}
       <header style={isMobile ? mobileHeader : header}>
         <div style={isMobile ? mobileHeaderContent : headerContent}>
-          {/* Logo dan Brand di POJOK KIRI */}
+          {/* Logo dan Brand */}
           <div style={logoSection}>
             <div style={logoContainer}>
               <img 
-                src="/seatrium_logo_white.png"
+                src={seatrium_logo}
                 alt="Seatrium Logo"
                 style={isMobile ? mobileLogo : logo}
-                onError={handleImageError}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
               />
             </div>
             {!isMobile && (
@@ -174,38 +303,29 @@ const SshPage: React.FC = () => {
             )}
           </div>
           
-          {/* Actions di POJOK KANAN */}
+          {/* Actions */}
           <div style={isMobile ? mobileHeaderActions : headerActions}>
-            {connections.length > 0 && !isMobile && (
+            {connections.length > 0 && (
               <button 
-                style={closeAllButton}
+                style={isMobile ? {...closeAllButton, padding: "6px 8px", fontSize: 12} : closeAllButton}
                 onClick={closeAllConnections}
                 title="Close All Connections"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
-                }}
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M2.146 2.854a.5.5 0 11.708-.708L8 7.293l5.146-5.147a.5.5 0 01.708.708L8.707 8l5.147 5.146a.5.5 0 01-.708.708L8 8.707l-5.146 5.147a.5.5 0 01-.708-.708L7.293 8 2.146 2.854z"/>
-                </svg>
-                Close All
+                {!isMobile && (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M2.146 2.854a.5.5 0 11.708-.708L8 7.293l5.146-5.147a.5.5 0 01.708.708L8.707 8l5.147 5.146a.5.5 0 01-.708.708L8 8.707l-5.146 5.147a.5.5 0 01-.708-.708L7.293 8 2.146 2.854z"/>
+                    </svg>
+                    Close All
+                  </>
+                )}
+                {isMobile && "✕ Close All"}
               </button>
             )}
             <button 
               style={isMobile ? mobileNewConnectionButton : newConnectionButton}
               onClick={addConnection}
               title="New Connection"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 6px 16px rgba(59, 130, 246, 0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(59, 130, 246, 0.3)";
-              }}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z"/>
@@ -218,24 +338,27 @@ const SshPage: React.FC = () => {
 
       {/* Tab Container */}
       {connections.length > 0 && (
-        <div style={tabContainer}>
+        <div style={isMobile ? mobileTabContainer : tabContainer}>
           {connections.map((conn) => (
             <div
               key={conn.id}
-              style={conn.id === activeTabId ? activeTab : tab}
+              style={conn.id === activeTabId ? (isMobile ? mobileActiveTab : activeTab) : (isMobile ? mobileTab : tab)}
               onClick={() => switchTab(conn.id)}
             >
               <span style={{ 
-                fontSize: 12, 
-                marginRight: 6,
+                fontSize: isMobile ? 10 : 12, 
+                marginRight: isMobile ? 4 : 6,
                 opacity: conn.connected ? 1 : 0.6 
               }}>
                 {conn.connected ? "🔗" : "📄"}
               </span>
               <span style={{ 
-                fontSize: 13, 
+                fontSize: isMobile ? 10 : 13, 
                 fontWeight: conn.id === activeTabId ? 600 : 400,
-                fontFamily: "'Poppins', sans-serif"
+                fontFamily: "'Poppins', sans-serif",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
               }}>
                 {getTabTitle(conn)}
               </span>
@@ -245,15 +368,16 @@ const SshPage: React.FC = () => {
                   border: "none",
                   color: "#ffffff",
                   cursor: "pointer",
-                  fontSize: 16,
-                  marginLeft: 8,
-                  width: 16,
-                  height: 16,
+                  fontSize: isMobile ? 14 : 16,
+                  marginLeft: isMobile ? 4 : 8,
+                  width: isMobile ? 14 : 16,
+                  height: isMobile ? 14 : 16,
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontFamily: "'Poppins', sans-serif"
+                  fontFamily: "'Poppins', sans-serif",
+                  flexShrink: 0
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -273,8 +397,9 @@ const SshPage: React.FC = () => {
             </div>
           ))}
           
+          {/* New Tab Button */}
           <button
-            style={newTabButton}
+            style={isMobile ? mobileNewTabButton : newTabButton}
             onClick={addConnection}
             title="New Connection"
           >
@@ -284,7 +409,7 @@ const SshPage: React.FC = () => {
       )}
 
       {/* Tab Content */}
-      <div style={tabContent}>
+      <div style={isMobile ? mobileTabContent : tabContent}>
         {connections.map((conn) => (
           <div
             key={conn.id}
@@ -293,31 +418,94 @@ const SshPage: React.FC = () => {
               flexDirection: "column",
               height: "100%",
               background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+              overflow: "hidden",
             }}
           >
-            <SshTerminal 
-              connection={conn} 
-              onUpdate={updateConnection}
-              onClose={() => removeConnection(conn.id)}
-              isMobile={isMobile}
-            />
+            {/* Untuk mobile, tambahkan scroll container */}
+            {isMobile && !conn.connected ? (
+              <div style={mobileScrollContainer}>
+                <SshTerminal 
+                  connection={conn} 
+                  onUpdate={updateConnection}
+                  onClose={() => removeConnection(conn.id)}
+                  isMobile={isMobile}
+                />
+              </div>
+            ) : (
+              <SshTerminal 
+                connection={conn} 
+                onUpdate={updateConnection}
+                onClose={() => removeConnection(conn.id)}
+                isMobile={isMobile}
+              />
+            )}
           </div>
         ))}
         
+        {/* Empty State - Diperbaiki untuk mobile scrolling */}
         {connections.length === 0 && (
-          <div style={emptyStateContent}>
-            <div style={appTitleContainer}>
-              <h1 style={appTitleMain}>Secure<span style={appTitleAccent}>Shell</span></h1>
-              <div style={appTitleSubtitle}>TERMINAL</div>
+          <div style={{ 
+            ...emptyStateContent, 
+            position: "relative",
+            height: "100%",
+            overflowY: isMobile ? "auto" : "hidden",
+            WebkitOverflowScrolling: isMobile ? "touch" : "auto",
+            padding: isMobile ? "20px 16px" : "40px 20px"
+          }}>
+            {/* LOGO BESAR SANGAT TRANSPARAN */}
+            <img 
+              src={seatrium_logo}
+              alt="background logo"
+              style={isMobile ? mobileEmptyStateBackgroundLogo : emptyStateBackgroundLogo}
+            />
+
+            {/* Foreground Content */}
+            <div style={{
+              ...appTitleContainer,
+              marginBottom: isMobile ? "32px" : "48px"
+            }}>
+              <h1 style={{
+                ...appTitleMain,
+                fontSize: isMobile ? "1.8rem" : "3rem",
+                lineHeight: isMobile ? "1.2" : "1.1"
+              }}>
+                Secure<span style={appTitleAccent}>Shell</span>
+              </h1>
+              <div style={{
+                ...appTitleSubtitle,
+                fontSize: isMobile ? "0.8rem" : "1.15rem",
+                marginTop: isMobile ? "4px" : "6px"
+              }}>
+                TERMINAL
+              </div>
             </div>
 
-            <h2 style={emptyStateTitle}>No Active Connections</h2>
-            <p style={emptyStateDescription}>
+            <h2 style={{
+              ...emptyStateTitle,
+              fontSize: isMobile ? "1rem" : "1.3rem",
+              marginTop: isMobile ? "0px" : "-20px",
+              marginBottom: isMobile ? "8px" : "5px"
+            }}>
+              No Active Connections
+            </h2>
+            <p style={{
+              ...emptyStateDescription,
+              fontSize: isMobile ? "0.85rem" : "1rem",
+              padding: isMobile ? "0 10px" : "0",
+              marginBottom: isMobile ? "24px" : "32px",
+              lineHeight: isMobile ? "1.5" : "1.6"
+            }}>
               Create a new SSH connection to manage your remote servers
             </p>
-            
-            <button style={isMobile ? mobileEmptyStateBtn : emptyStateBtn} onClick={addConnection}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style={{marginRight: '8px'}}>
+
+            <button
+              style={isMobile ? {
+                ...mobileEmptyStateBtn,
+                marginBottom: "20px" // Tambah margin bottom untuk mobile
+              } : emptyStateBtn}
+              onClick={addConnection}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style={{ marginRight: 8 }}>
                 <path d="M8 2a1 1 0 00-1 1v4H3a1 1 0 100 2h4v4a1 1 0 102 0V9h4a1 1 0 100-2H9V3a1 1 0 00-1-1z"/>
               </svg>
               Create New Connection

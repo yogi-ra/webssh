@@ -45,7 +45,7 @@ const SshTerminal: React.FC<{
 
     const term = new Terminal({
       cursorBlink: true,
-      fontSize: 14,
+      fontSize: isMobile ? 12 : 14, // Font size lebih kecil di mobile
       fontFamily: "'Fira Code', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
       theme: { 
         background: "#0f172a",
@@ -65,7 +65,12 @@ const SshTerminal: React.FC<{
     const fit = new FitAddon();
     term.loadAddon(fit);
     term.open(termDiv.current!);
-    fit.fit();
+    
+    // Delay fit untuk memastikan container sudah ter-render
+    setTimeout(() => {
+      fit.fit();
+    }, 100);
+    
     term.focus();
 
     termRef.current = term;
@@ -115,35 +120,59 @@ const SshTerminal: React.FC<{
         ws.send(JSON.stringify({ type: "data", data }));
     });
 
+    // Handle window resize untuk terminal
+    const handleResize = () => {
+      setTimeout(() => {
+        if (fitRef.current) {
+          fitRef.current.fit();
+        }
+      }, 50);
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
+      window.removeEventListener('resize', handleResize);
       ws.close();
       term.dispose();
     };
-  }, [connected]);
+  }, [connected, isMobile]); // Tambah isMobile ke dependency
 
   useEffect(() => {
     if (fitRef.current) {
-      setTimeout(() => fitRef.current?.fit(), 50);
+      setTimeout(() => fitRef.current?.fit(), 100);
     }
-  }, []);
+  }, [isMobile]); // Refit ketika ukuran layar berubah
 
   if (!connected) {
     return (
       <div style={isMobile ? mobileConnectionForm : connectionForm}>
         <div style={isMobile ? mobileFormContainer : formContainer}>
           <div style={formHeader}>
-            <h2 style={formTitle}>SSH CONNECTION</h2>
-            <p style={formSubtitle}>Enter your server credentials to establish a secure connection</p>
+            <h2 style={{
+              ...formTitle,
+              fontSize: isMobile ? "1.2rem" : "1.5rem"
+            }}>
+              SSH CONNECTION
+            </h2>
+            <p style={{
+              ...formSubtitle,
+              fontSize: isMobile ? "0.8rem" : "0.875rem",
+              padding: isMobile ? "0 10px" : "0"
+            }}>
+              Enter your server credentials to establish a secure connection
+            </p>
           </div>
 
           {connection.error && (
             <div style={{ 
               color: "#f87171", 
               fontWeight: 500, 
-              marginBottom: "20px", 
+              marginBottom: "16px", 
               fontFamily: "'Poppins', sans-serif", 
-              fontSize: isMobile ? "12px" : "13px",
-              textAlign: "center"
+              fontSize: isMobile ? "11px" : "13px",
+              textAlign: "center",
+              padding: isMobile ? "0 10px" : "0"
             }}>
               {connection.error}
             </div>
@@ -240,17 +269,29 @@ const SshTerminal: React.FC<{
       display: "flex", 
       flexDirection: "column", 
       height: "100%",
-      background: "#0f172a"
+      background: "#0f172a",
+      overflow: "hidden"
     }}>
       <div style={{
-        padding: "12px 16px",
+        padding: isMobile ? "8px 12px" : "12px 16px",
         background: "rgba(15, 23, 42, 0.8)",
         borderBottom: `1px solid #334155`,
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        flexShrink: 0
       }}>
-        <div style={{ color: "#10b981", fontSize: 13, fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>
+        <div style={{ 
+          color: "#10b981", 
+          fontSize: isMobile ? 11 : 13, 
+          fontWeight: 600, 
+          fontFamily: "'Poppins', sans-serif",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          flex: 1,
+          marginRight: 8
+        }}>
           🔗 Connected to {username}@{host}:{port}
         </div>
         <button
@@ -259,19 +300,28 @@ const SshTerminal: React.FC<{
             border: `1px solid rgba(255, 255, 255, 0.2)`,
             color: "#ffffff",
             cursor: "pointer",
-            fontSize: 13,
-            padding: "6px 12px",
+            fontSize: isMobile ? 11 : 13,
+            padding: isMobile ? "4px 8px" : "6px 12px",
             borderRadius: 6,
             transition: "all 0.2s ease",
-            fontFamily: "'Poppins', sans-serif"
+            fontFamily: "'Poppins', sans-serif",
+            flexShrink: 0
           }}
           onClick={onClose}
           title="Close Tab"
         >
-          Close Tab
+          {isMobile ? "Close" : "Close Tab"}
         </button>
       </div>
-      <div ref={termDiv} style={{ flex: 1, width: "100%" }} />
+      <div 
+        ref={termDiv} 
+        style={{ 
+          flex: 1, 
+          width: "100%",
+          padding: isMobile ? "2px" : "0", // Sedikit padding untuk mobile
+          boxSizing: "border-box"
+        }} 
+      />
     </div>
   );
 };

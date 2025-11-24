@@ -13,11 +13,12 @@ const colors = {
   success: "#10b981",
   warning: "#f59e0b",
   error: "#ef4444",
-  background: "#0f1216"
+  background: "#0f1216",
 };
 
 // Font Family Poppins untuk semua elemen
-const fontFamily = "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+const fontFamily =
+  "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
 
 export const workspaceStyle: CSSProperties = {
   position: "relative",
@@ -32,12 +33,13 @@ export const workspaceStyle: CSSProperties = {
 
 // ==================== HEADER STYLES ====================
 export const header: CSSProperties = {
-  background: "rgba(15, 23, 42, 0.95)",
-  borderBottom: `1px solid ${colors.border}`,
-  backdropFilter: "blur(10px)",
-  padding: "12px 36px",
-  flexShrink: 0,
   width: "100%",
+  background: colors.primary,
+  padding: "0 24px", // ⭐ tambah padding kiri-kanan (AMAN UNTUK LOGO & BUTTON)
+  height: 64,
+  display: "flex",
+  alignItems: "center",
+  boxSizing: "border-box",
 };
 
 export const mobileHeader: CSSProperties = {
@@ -50,7 +52,8 @@ export const headerContent: CSSProperties = {
   justifyContent: "space-between",
   alignItems: "center",
   width: "100%",
-  maxWidth: "100%",
+  maxWidth: "100%", // biar tidak center
+  margin: 0,
 };
 
 export const mobileHeaderContent: CSSProperties = {
@@ -123,7 +126,6 @@ export const mobileHeaderActions: CSSProperties = {
   marginRight: 0, // Pastikan 0 untuk mobile juga
 };
 
-
 export const closeAllButton: CSSProperties = {
   background: "rgba(255, 255, 255, 0.1)",
   color: "#ffffff",
@@ -147,8 +149,8 @@ export const closeAllButtonHover: CSSProperties = {
 };
 
 export const newConnectionButton: CSSProperties = {
-  background: `linear-gradient(135deg, ${colors.accent}, ${colors.accentDark})`,
-  color: colors.text,
+  background: "#1d4ed8", // biru gelap solid
+  color: "#ffffff",
   border: "none",
   padding: "8px 16px",
   borderRadius: 8,
@@ -159,7 +161,7 @@ export const newConnectionButton: CSSProperties = {
   alignItems: "center",
   gap: 8,
   transition: "all 0.2s ease",
-  boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+  boxShadow: "none", // hilangkan efek terang
   fontFamily: fontFamily,
   whiteSpace: "nowrap",
 };
@@ -402,7 +404,7 @@ export const appTitleContainer: CSSProperties = {
 };
 
 export const appTitleMain: CSSProperties = {
-  fontSize: "4rem",
+  fontSize: "3rem",
   fontWeight: 800,
   fontStyle: "italic",
   background: "linear-gradient(135deg, #f8fafc 0%, #cbd5e1 50%, #94a3b8 100%)",
@@ -422,20 +424,22 @@ export const appTitleAccent: CSSProperties = {
 };
 
 export const appTitleSubtitle: CSSProperties = {
-  fontSize: "1.25rem",
+  fontSize: "1.15rem",
   fontWeight: 700,
   color: colors.accent,
   letterSpacing: "0.3em",
   textTransform: "uppercase",
-  marginTop: 8,
+  marginTop: 6,
+
   fontFamily: fontFamily,
 };
 
 export const emptyStateTitle: CSSProperties = {
   color: colors.text,
-  fontSize: "1.5rem",
+  fontSize: "1.3rem",
   fontWeight: 600,
-  marginBottom: 12,
+  marginBottom: 5,
+  marginTop: "-20px", // ⬅⬅ naikkan teks judul 20px
   fontFamily: fontFamily,
 };
 
@@ -449,25 +453,25 @@ export const emptyStateDescription: CSSProperties = {
 };
 
 export const emptyStateBtn: CSSProperties = {
-  background: `linear-gradient(135deg, ${colors.accent}, ${colors.accentDark})`,
+  background: "#1d4ed8", // biru gelap (blue-700)
   color: colors.text,
   border: "none",
-  padding: "14px 28px",
+  padding: "13px 24px",
   borderRadius: 8,
   cursor: "pointer",
   fontSize: "1rem",
   fontWeight: 600,
   display: "flex",
   alignItems: "center",
-  transition: "all 0.2s ease",
-  boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+  transition: "none", // hilangkan efek cerah/hover
+  boxShadow: "none", // hilangkan glow biru
   fontFamily: fontFamily,
 };
 
 export const mobileEmptyStateBtn: CSSProperties = {
   ...emptyStateBtn,
-  padding: "16px 32px",
-  fontSize: "1.1rem",
+  padding: "14px 30px",
+  fontSize: "1rem",
   width: "100%",
   maxWidth: 280,
   justifyContent: "center",
