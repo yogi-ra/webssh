@@ -105,10 +105,13 @@ async def websocket_endpoint(websocket: WebSocket):
             if message["type"] == "connect":
                 details = message["data"]
                 try:
+                    # print(
+                    #     f"Attempting SSH connection to {details['username']}@{
+                    #         details['host']
+                    #     }:{details['port']}"
+                    # )
                     print(
-                        f"Attempting SSH connection to {details['username']}@{
-                            details['host']
-                        }:{details['port']}"
+                        f"Attempting SSH connection to {details['username']}@{details['host']}:{details['port']}"
                     )
 
                     ssh_connection = SSH(
