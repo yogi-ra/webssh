@@ -31,11 +31,41 @@ const SshTerminal: React.FC<{
   isMobile: boolean;
 }> = ({ connection, onUpdate, onClose, isMobile }) => {
   const termDiv = useRef<HTMLDivElement>(null);  
-  const termRef = useRef<Terminal>(null);        
-  const fitRef = useRef<FitAddon>(null);
-  const wsRef = useRef<WebSocket>(null);
+  const termRef = useRef<Terminal | null>(null);        
+  const fitRef = useRef<FitAddon | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const { id, connected, connecting, host, port, username, password } = connection;
+
+  const sendTerminalResize = (term: Terminal, ws: WebSocket) => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(
+        JSON.stringify({
+          type: "resize",
+          data: { cols: term.cols, rows: term.rows },
+        }),
+      );
+    }
+  };
+
+  const fitTerminal = () => {
+    const fitAddon = fitRef.current;
+    const term = termRef.current;
+    const ws = wsRef.current;
+
+    if (fitAddon && term) {
+      try {
+        fitAddon.fit();
+        
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          sendTerminalResize(term, ws);
+        }
+      } catch (error) {
+        console.warn('FitAddon fit failed:', error);
+      }
+    }
+  };
 
   useEffect(() => {
     if (!connected) return;
@@ -45,7 +75,7 @@ const SshTerminal: React.FC<{
 
     const term = new Terminal({
       cursorBlink: true,
-      fontSize: isMobile ? 12 : 14, // Font size lebih kecil di mobile
+      fontSize: isMobile ? 12 : 14,
       fontFamily: "'Fira Code', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
       theme: { 
         background: "#0f172a",
@@ -62,24 +92,28 @@ const SshTerminal: React.FC<{
         white: "#e2e8f0"
       },
     });
-    const fit = new FitAddon();
-    term.loadAddon(fit);
+
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
     term.open(termDiv.current!);
     
-    // Delay fit untuk memastikan container sudah ter-render
+    termRef.current = term;
+    fitRef.current = fitAddon;
+    wsRef.current = ws;
+
     setTimeout(() => {
-      fit.fit();
+      fitTerminal();
     }, 100);
     
     term.focus();
 
-    termRef.current = term;
-    fitRef.current = fit;
-    wsRef.current = ws;
-
     const decoder = new TextDecoder("utf-8", { fatal: false });
 
     ws.onopen = () => {
+      setTimeout(() => {
+        fitTerminal();
+      }, 200);
+
       ws.send(
         JSON.stringify({
           type: "connect",
@@ -94,6 +128,9 @@ const SshTerminal: React.FC<{
           const msg = JSON.parse(evt.data);      
           if (msg.type === "connected") {        
             term.write("\r\n\x1b[32m✅ Connected successfully!\x1b[0m\r\n"); 
+            setTimeout(() => {
+              fitTerminal();
+            }, 300);
           } else if (msg.type === "error") {     
             const errMsg = `\r\n\x1b[31m❌ Connection failed: ${msg.data}\x1b[0m\r\n`;
             term.write(errMsg);
@@ -120,29 +157,80 @@ const SshTerminal: React.FC<{
         ws.send(JSON.stringify({ type: "data", data }));
     });
 
-    // Handle window resize untuk terminal
-    const handleResize = () => {
-      setTimeout(() => {
-        if (fitRef.current) {
-          fitRef.current.fit();
+    // ✅ Keyboard shortcuts untuk zoom
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && termRef.current && fitRef.current) {
+        const term = termRef.current;
+        
+        if (e.key === '+' || e.key === '=') {
+          e.preventDefault();
+          const currentSize = term.options.fontSize || 14;
+          term.options.fontSize = Math.min(currentSize + 1, 24);
+          setTimeout(fitTerminal, 10);
+        } else if (e.key === '-') {
+          e.preventDefault();
+          const currentSize = term.options.fontSize || 14;
+          term.options.fontSize = Math.max(currentSize - 1, 8);
+          setTimeout(fitTerminal, 10);
+        } else if (e.key === '0') {
+          e.preventDefault();
+          term.options.fontSize = isMobile ? 12 : 14;
+          setTimeout(fitTerminal, 10);
         }
-      }, 50);
+      }
     };
 
-    window.addEventListener('resize', handleResize);
+    resizeObserverRef.current = new ResizeObserver(() => {
+      setTimeout(fitTerminal, 50);
+    });
+
+    if (termDiv.current) {
+      resizeObserverRef.current.observe(termDiv.current);
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      ws.close();
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+      }
+      document.removeEventListener('keydown', handleKeyDown);
+      
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
       term.dispose();
+      
+      termRef.current = null;
+      fitRef.current = null;
+      wsRef.current = null;
+      resizeObserverRef.current = null;
     };
-  }, [connected, isMobile]); // Tambah isMobile ke dependency
+  }, [connected, isMobile]);
 
   useEffect(() => {
-    if (fitRef.current) {
-      setTimeout(() => fitRef.current?.fit(), 100);
+    if (connected && termRef.current) {
+      termRef.current.options.fontSize = isMobile ? 12 : 14;
+      
+      setTimeout(() => {
+        fitTerminal();
+      }, 150);
     }
-  }, [isMobile]); // Refit ketika ukuran layar berubah
+  }, [isMobile, connected]);
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      if (connected) {
+        setTimeout(fitTerminal, 100);
+      }
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, [connected]);
 
   if (!connected) {
     return (
@@ -275,7 +363,7 @@ const SshTerminal: React.FC<{
       <div style={{
         padding: isMobile ? "8px 12px" : "12px 16px",
         background: "rgba(15, 23, 42, 0.8)",
-        borderBottom: `1px solid #334155`,
+        borderBottom: "1px solid #334155",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -297,7 +385,9 @@ const SshTerminal: React.FC<{
         <button
           style={{
             background: "rgba(255, 255, 255, 0.1)",
-            border: `1px solid rgba(255, 255, 255, 0.2)`,
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "rgba(255, 255, 255, 0.2)",
             color: "#ffffff",
             cursor: "pointer",
             fontSize: isMobile ? 11 : 13,
@@ -318,8 +408,10 @@ const SshTerminal: React.FC<{
         style={{ 
           flex: 1, 
           width: "100%",
-          padding: isMobile ? "2px" : "0", // Sedikit padding untuk mobile
-          boxSizing: "border-box"
+          padding: isMobile ? "2px" : "0",
+          boxSizing: "border-box",
+          minHeight: 0,
+          position: "relative"
         }} 
       />
     </div>
