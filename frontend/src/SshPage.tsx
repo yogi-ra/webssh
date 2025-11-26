@@ -329,8 +329,8 @@ const SshPage: React.FC = () => {
   // Fungsi untuk handle logout dengan konfirmasi
   const handleLogout = async () => {
     const result = await Swal.fire({
-      title: "Logout?",
-      text: "Are you sure you want to logout from SSH Terminal?",
+      title: "Logout & Return to Portal?",
+      text: "Are you sure you want to logout from SSH Terminal & Back to Portal?",
       icon: "question",
       background: "#0f172a",
       color: "#f8fafc",
@@ -482,7 +482,7 @@ const SshPage: React.FC = () => {
                 whiteSpace: "nowrap",
               }}
               onClick={handleLogout}
-              title="Logout"
+              title="Portal"
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#c13a1eff";
                 e.currentTarget.style.transform = "translateY(-1px)";
@@ -504,7 +504,7 @@ const SshPage: React.FC = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              {!isMobile && "Logout"}
+              {!isMobile && "Portal"}
             </button>
           </div>
         </div>
