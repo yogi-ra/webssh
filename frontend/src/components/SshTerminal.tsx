@@ -70,13 +70,19 @@ const SshTerminal: React.FC<{
   useEffect(() => {
     if (!connected) return;
     
-    const ws = new WebSocket("ws://localhost:8000/ws/ssh");
+const token = localStorage.getItem("token") ?? "";
+
+const ws = new WebSocket(
+  `ws://localhost:8000/ws/ssh?token=${encodeURIComponent(token)}`
+);
+
+
     ws.binaryType = "arraybuffer";
 
     const term = new Terminal({
       cursorBlink: true,
       fontSize: isMobile ? 12 : 14,
-      fontFamily: "'Fira Code', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+      fontFamily: "'Fir a Code', 'Cascadia Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
       theme: { 
         background: "#0f172a",
         foreground: "#e2e8f0",

@@ -157,6 +157,14 @@ const SshPage: React.FC = () => {
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "http://localhost:3000/login"; // redirect ke portal
+  }
+}, []);
+
+
   // Check mobile screen size dengan threshold yang lebih baik
   useEffect(() => {
     const checkMobile = () => {
