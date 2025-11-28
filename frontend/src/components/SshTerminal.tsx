@@ -4,6 +4,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import toast from "react-hot-toast";
 import type { Connection } from "./types";
+import apiConfig from "../config/api"
 import { 
   connectionForm,
   mobileConnectionForm,
@@ -70,11 +71,9 @@ const SshTerminal: React.FC<{
   useEffect(() => {
     if (!connected) return;
     
-const token = localStorage.getItem("token") ?? "";
+const token = localStorage.getItem("token") ?? ""; // fallback ke string kosong
 
-const ws = new WebSocket(
-  `ws://localhost:8000/ws/ssh?token=${encodeURIComponent(token)}`
-);
+const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
 
 
     ws.binaryType = "arraybuffer";
@@ -133,12 +132,12 @@ const ws = new WebSocket(
         try {
           const msg = JSON.parse(evt.data);      
           if (msg.type === "connected") {        
-            term.write("\r\n\x1b[32m✅ Connected successfully!\x1b[0m\r\n"); 
+            term.write("\r\n\x1b[32m Connected successfully!\x1b[0m\r\n"); 
             setTimeout(() => {
               fitTerminal();
             }, 300);
           } else if (msg.type === "error") {     
-            const errMsg = `\r\n\x1b[31m❌ Connection failed: ${msg.data}\x1b[0m\r\n`;
+            const errMsg = `\r\n\x1b[31m Connection failed: ${msg.data}\x1b[0m\r\n`;
             term.write(errMsg);
             toast.error(msg.data);
             setTimeout(() => {
@@ -163,7 +162,7 @@ const ws = new WebSocket(
         ws.send(JSON.stringify({ type: "data", data }));
     });
 
-    // ✅ Keyboard shortcuts untuk zoom
+    //  Keyboard shortcuts untuk zoom
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && termRef.current && fitRef.current) {
         const term = termRef.current;

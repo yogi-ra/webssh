@@ -5,6 +5,9 @@ import type { Connection } from "./components/types";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { v4 as uuidv4 } from "uuid";
+import seatrium_logo from "../public/seatrium_logo_white.png";
+import apiConfig, { API_ENDPOINTS } from "./config/api";
+
 import {
   workspaceStyle,
   tabContainer,
@@ -41,9 +44,6 @@ import {
   emptyStateBtn,
   mobileEmptyStateBtn,
 } from "./components/styles";
-
-// Import logo
-import seatrium_logo from "../public/seatrium_logo_white.png";
 
 // Mobile-specific styles
 const mobileTabContainer: React.CSSProperties = {
@@ -170,19 +170,19 @@ const SshPage: React.FC = () => {
       }
 
       window.history.replaceState({}, document.title, window.location.pathname);
-      console.log("✅ Token received from Portal");
+      console.log(" Token received from Portal");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      console.log("❌ No token found");
-      window.location.href = "http://localhost:3000/login";
+      console.log(" No token found");
+      window.location.href = apiConfig.ROUTES.LOGIN;
       return;
     }
 
     // PENTING: Verifikasi token ke backend Portal
-    fetch("http://localhost:4000/users/verify-token", {
+    fetch(API_ENDPOINTS.VERIFY_TOKEN, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
@@ -194,14 +194,14 @@ const SshPage: React.FC = () => {
         return res.json();
       })
       .then((data) => {
-        console.log("✅ Token valid:", data);
+        console.log(" Token valid:", data);
       })
       .catch((err) => {
-        console.error("❌ Token verification failed:", err);
+        console.error(" Token verification failed:", err);
         // HAPUS token yang invalid
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        window.location.href = "http://localhost:3000/login";
+        window.location.href =  apiConfig.ROUTES.LOGIN;
       });
   }, []);
 
@@ -211,7 +211,7 @@ const SshPage: React.FC = () => {
       if (e.key === "token" && e.newValue === null) {
         console.log("🔓 Logout detected - token removed");
         // Redirect ke Portal login
-        window.location.href = "http://localhost:3000/login";
+        window.location.href = apiConfig.ROUTES.LOGIN;;
       }
     };
 
@@ -372,7 +372,8 @@ const SshPage: React.FC = () => {
       });
 
       // Redirect ke halaman login
-      window.location.href = "http://localhost:3000/login";
+      
+      window.location.href = apiConfig.ROUTES.LOGIN; 
     }
   };
 
