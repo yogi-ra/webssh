@@ -15,7 +15,8 @@
     "react-dom": "^19",
     "react-hot-toast": "^2.6.0",
     "react-rnd": "^10.5.2",
-    "sweetalert2": "^11.26.3"
+    "sweetalert2": "^11.26.3",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/react": "^19",

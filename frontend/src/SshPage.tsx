@@ -4,6 +4,7 @@ import SshTerminal from "./components/SshTerminal";
 import type { Connection } from "./components/types";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { v4 as uuidv4 } from "uuid";
 import {
   workspaceStyle,
   tabContainer,
@@ -236,7 +237,7 @@ const SshPage: React.FC = () => {
   }, []);
 
   const addConnection = () => {
-    const id = crypto.randomUUID();
+       const id = uuidv4();
     const newConnection: Connection = {
       id,
       host: "",
