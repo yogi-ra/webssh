@@ -25,7 +25,7 @@ import {
   loadingSpinner
 } from "./styles";
 
-const SshTerminal: React.FC<{
+const ConnectionTerminal: React.FC<{
   connection: Connection;
   onUpdate: (id: string, updates: Partial<Connection>) => void;
   onClose: () => void;
@@ -122,6 +122,7 @@ const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
       ws.send(
         JSON.stringify({
           type: "connect",
+          protocol: connection.protocol,
           data: { host, port, username, password },
         }),
       );
@@ -246,14 +247,14 @@ const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
               ...formTitle,
               fontSize: isMobile ? "1.2rem" : "1.5rem"
             }}>
-              SSH CONNECTION
+              TERMINAL CONNECTION
             </h2>
             <p style={{
               ...formSubtitle,
               fontSize: isMobile ? "0.8rem" : "0.875rem",
               padding: isMobile ? "0 10px" : "0"
             }}>
-              Enter your server credentials to establish a secure connection
+              Enter your server credentials to establish a connection
             </p>
           </div>
 
@@ -270,6 +271,30 @@ const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
               {connection.error}
             </div>
           )}
+
+          <div style={{
+            ...formGroup,
+            marginBottom: 20,
+          }}>
+            <label style={formLabel}>Protocol</label>
+            <select
+              value={connection.protocol}
+              onChange={(e) => {
+                const newProtocol = e.target.value as 'ssh' | 'telnet';
+                let newPort = connection.port;
+                if (newProtocol === 'ssh' && connection.port === 23) {
+                  newPort = 22;
+                } else if (newProtocol === 'telnet' && connection.port === 22) {
+                  newPort = 23;
+                }
+                onUpdate(id, { protocol: newProtocol, port: newPort, error: undefined });
+              }}
+              style={isMobile ? mobileFormInput : {...formInput, appearance: 'none', cursor: 'pointer'}}
+            >
+              <option value="ssh">SSH</option>
+              <option value="telnet">Telnet</option>
+            </select>
+          </div>
 
           <div style={isMobile ? mobileFormGrid : formGrid}>
             <div style={formGroup}>
@@ -326,9 +351,9 @@ const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
           <button
             style={{
               ...(isMobile ? mobileConnectButton : connectButton),
-              ...((!host || !username || !password) ? connectButtonDisabled : {})
+              ...((connecting || !host || (connection.protocol === 'ssh' && (!username || !password))) ? connectButtonDisabled : {})
             }}
-            disabled={connecting || !host || !username || !password}
+            disabled={(connecting || !host || (connection.protocol === 'ssh' && (!username || !password)))}
             onClick={() => {
               onUpdate(id, {
                 connecting: true,
@@ -348,7 +373,7 @@ const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
                   <path d="M4.715 6.542L3.343 7.914a3 3 0 104.243 4.243l1.828-1.829A3 3 0 008.586 5.5L8 6.086a1.002 1.002 0 00-.154.199 2 2 0 01.861 3.337L6.88 11.45a2 2 0 11-2.83-2.83l.793-.792a4.018 4.018 0 01-.128-1.287z"/>
                   <path d="M6.586 4.672A3 3 0 007.414 9.5l.775-.776a2 2 0 01-.896-3.346L9.12 3.55a2 2 0 112.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 10-4.243-4.243L6.586 4.672z"/>
                 </svg>
-                Connect to Server
+                Connect
               </>
             )}
           </button>
@@ -385,7 +410,7 @@ const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
           flex: 1,
           marginRight: 8
         }}>
-          🔗 Connected to {username}@{host}:{port}
+          🔗 {connection.protocol.toUpperCase()} Connected to {username}@{host}:{port}
         </div>
         <button
           style={{
@@ -423,4 +448,4 @@ const ws = new WebSocket(apiConfig.buildWebSocketUrl(token));
   );
 };
 
-export default SshTerminal;
+export default ConnectionTerminal;

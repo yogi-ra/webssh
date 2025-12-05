@@ -1,8 +1,8 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request, HTTPException
-from .routes.ssh import router as ssh_router
+from .routes.connection import router as connection_router
 import requests
-from config import config  # Import config
+from .config import config  # Import config
 
 app = FastAPI()
 
@@ -18,7 +18,7 @@ app.add_middleware(
 @app.middleware("http")
 async def verify_token(request: Request, call_next):
     # Hanya verifikasi untuk WebSocket endpoint
-    if request.url.path.startswith(config.WS_SSH_ENDPOINT):
+    if request.url.path.startswith(config.WS_TERMINAL_ENDPOINT):
         token = request.query_params.get("token")
         
         if not token:
@@ -41,5 +41,5 @@ async def verify_token(request: Request, call_next):
     
     return await call_next(request)
 
-# Router SSH
-app.include_router(ssh_router, prefix="/ws")
+# Router for terminal connections
+app.include_router(connection_router, prefix="/ws")

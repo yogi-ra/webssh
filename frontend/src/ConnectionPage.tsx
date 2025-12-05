@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import SshTerminal from "./components/SshTerminal";
+import ConnectionTerminal from "./components/ConnectionTerminal";
 import type { Connection } from "./components/types";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -153,7 +153,7 @@ const mobileScrollContainer: React.CSSProperties = {
   paddingBottom: "20px", // Ruang untuk scroll
 };
 
-const SshPage: React.FC = () => {
+const ConnectionPage: React.FC = () => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -241,9 +241,10 @@ const SshPage: React.FC = () => {
     const newConnection: Connection = {
       id,
       host: "",
-      port: 22,
+      port: 22, // Default to SSH port
       username: "",
       password: "",
+      protocol: "ssh", // Default to SSH
       connected: false,
       connecting: false,
       x: 0,
@@ -331,7 +332,7 @@ const SshPage: React.FC = () => {
   const handleLogout = async () => {
     const result = await Swal.fire({
       title: "Logout & Return to Portal?",
-      text: "Are you sure you want to logout from SSH Terminal & Back to Portal?",
+      text: "Are you sure you want to logout from Terminal & Back to Portal?",
       icon: "question",
       background: "#0f172a",
       color: "#f8fafc",
@@ -383,13 +384,12 @@ const SshPage: React.FC = () => {
 
   const getTabTitle = (conn: Connection) => {
     if (conn.connected && conn.host && conn.username) {
-      // Untuk mobile, tampilkan host saja jika terlalu panjang
       if (isMobile && `${conn.username}@${conn.host}`.length > 12) {
-        return conn.host;
+        return `${conn.protocol.toUpperCase()}: ${conn.host}`;
       }
-      return `${conn.username}@${conn.host}`;
+      return `${conn.protocol.toUpperCase()}: ${conn.username}@${conn.host}`;
     }
-    return conn.connected ? "Connected" : "New Connection";
+    return conn.connected ? `${conn.protocol.toUpperCase()}: ${conn.host}` : "New Connection";
   };
 
   return (
@@ -412,8 +412,8 @@ const SshPage: React.FC = () => {
             </div>
             {!isMobile && (
               <div style={brandText}>
-                <div style={brandTitle}>SSH Terminal</div>
-                <div style={brandSubtitle}>Secure remote server access</div>
+                <div style={brandTitle}>Terminal</div>
+                <div style={brandSubtitle}>Remote server access</div>
               </div>
             )}
           </div>
@@ -612,7 +612,7 @@ const SshPage: React.FC = () => {
             {/* Untuk mobile, tambahkan scroll container */}
             {isMobile && !conn.connected ? (
               <div style={mobileScrollContainer}>
-                <SshTerminal
+                <ConnectionTerminal
                   connection={conn}
                   onUpdate={updateConnection}
                   onClose={() => removeConnection(conn.id)}
@@ -620,7 +620,7 @@ const SshPage: React.FC = () => {
                 />
               </div>
             ) : (
-              <SshTerminal
+              <ConnectionTerminal
                 connection={conn}
                 onUpdate={updateConnection}
                 onClose={() => removeConnection(conn.id)}
@@ -667,17 +667,8 @@ const SshPage: React.FC = () => {
                   lineHeight: isMobile ? "1.2" : "1.1",
                 }}
               >
-                Secure<span style={appTitleAccent}>Shell</span>
+                Terminal<span style={appTitleAccent}>Shell</span>
               </h1>
-              <div
-                style={{
-                  ...appTitleSubtitle,
-                  fontSize: isMobile ? "0.8rem" : "1.15rem",
-                  marginTop: isMobile ? "4px" : "6px",
-                }}
-              >
-                TERMINAL
-              </div>
             </div>
 
             <h2
@@ -699,7 +690,7 @@ const SshPage: React.FC = () => {
                 lineHeight: isMobile ? "1.5" : "1.6",
               }}
             >
-              Create a new SSH connection to manage your remote servers
+              Create a new connection to manage your remote servers
             </p>
 
             <button
@@ -731,4 +722,4 @@ const SshPage: React.FC = () => {
   );
 };
 
-export default SshPage;
+export default ConnectionPage;

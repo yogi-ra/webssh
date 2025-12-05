@@ -6,20 +6,18 @@ const WS_BASE_URL = "ws://localhost:8000";
 export const API_ENDPOINTS = {
   // Auth
   LOGIN: `${PORTAL_BASE_URL}/login`,
-  VERIFY_TOKEN: `${API_BASE_URL}/users/verify-token`,
-  
-  // WebSocket
-  WS_SSH: `${WS_BASE_URL}/ws/ssh`,
+  VERIFY_TOKEN: `${API_BASE_URL}/users/verify-token`, 
+  WS_TERMINAL: `${WS_BASE_URL}/ws/terminal`,
 };
 
 export const ROUTES = {
   LOGIN: `${PORTAL_BASE_URL}/login`,
-  SSH_PAGE: `${PORTAL_BASE_URL}/ssh`,
+  TERMINAL_PAGE: `${PORTAL_BASE_URL}/terminal`,
 };
 
 // Helper functions
 export const buildWebSocketUrl = (token) => {
-  return `${API_ENDPOINTS.WS_SSH}?token=${encodeURIComponent(token)}`;
+  return `${API_ENDPOINTS.WS_TERMINAL}?token=${encodeURIComponent(token)}`;
 };
 
 export default {

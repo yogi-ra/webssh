@@ -1,9 +1,12 @@
+export type Protocol = 'ssh' | 'telnet';
+
 export interface Connection {
   id: string;
   host: string;
   port: number;
   username: string;
   password: string;
+  protocol: Protocol;
   connected: boolean;
   connecting: boolean;
   x: number;

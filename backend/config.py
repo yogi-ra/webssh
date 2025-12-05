@@ -27,8 +27,8 @@ class Config:
     
     # WebSocket Endpoints
     @property
-    def WS_SSH_ENDPOINT(self):
-        return f"/ws/ssh"
+    def WS_TERMINAL_ENDPOINT(self):
+        return f"/ws/terminal"
 
 # Create config instance
 config = Config()

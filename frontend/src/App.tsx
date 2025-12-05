@@ -1,9 +1,9 @@
 import "./index.css";
-import SshPage from "./SshPage";
+import ConnectionPage from "./ConnectionPage";
 
 export function App() {
   return (
-      <SshPage />
+      <ConnectionPage />
   );
 }
 
